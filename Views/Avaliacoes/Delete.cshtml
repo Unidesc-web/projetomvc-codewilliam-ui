@@ -1,0 +1,60 @@
+﻿@model RyujinBites.Models.Lanchonete.Avaliacao
+
+@{
+    ViewData["Title"] = "Deletar Avaliação"; // Título em português
+}
+
+<h1>Deletar Avaliação</h1>
+
+<h3>Tem certeza de que deseja deletar esta avaliação?</h3>
+<div>
+    <h4>Avaliação</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Produto)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Produto.Nome)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Cliente)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Cliente.ApplicationUser.Nome) (@Html.DisplayFor(model => model.Cliente.ApplicationUser.Email))
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Pontuacao)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Pontuacao)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Comentario)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Comentario)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.DataAvaliacao)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.DataAvaliacao)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.IsReported)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.IsReported)
+        </dd>
+    </dl>
+
+    <form asp-action="Delete">
+        <input type="hidden" asp-for="AvaliacaoId" /> <input type="submit" value="Deletar" class="btn btn-danger" /> | <a asp-action="Index">Voltar para a Lista</a>
+    </form>
+</div>
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

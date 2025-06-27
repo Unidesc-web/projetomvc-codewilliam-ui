@@ -1,0 +1,160 @@
+﻿@model RyujinBites.Models.ViewModels.HomeDashboardViewModel
+@using Microsoft.AspNetCore.Identity
+@using RyujinBites.Models.Identity
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+
+@{
+    ViewData["Title"] = "Dashboard"; // Novo título para o dashboard
+}
+
+<div class="row pt-4">
+    <div class="col-12">
+        <section class="welcome-section mb-4 p-4 rounded text-white d-flex align-items-center justify-content-between">
+            <div class="welcome-text">
+                <h2 class="display-4 fw-bold">@Model.WelcomeMessage</h2>
+                <p class="lead">@Model.WelcomeDescription</p>
+                <button class="btn btn-outline-light rounded-pill mt-3">Saiba mais</button>
+            </div>
+        </section>
+
+        <section class="analytic-section mb-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h4 class="fw-bold">Análise</h4>
+                <a href="#" class="text-warning text-decoration-none">Ver mais <i class="fas fa-arrow-right ms-1"></i></a>
+            </div>
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <div class="analytic-card bg-white p-3 rounded shadow-sm d-flex align-items-center">
+                        <div class="d-flex flex-column gap-2 flex-grow-1">
+                            <p class="mb-0 text-muted">Pedidos Concluídos</p>
+                            <div class="d-flex align-items-center justify-content-between">
+                                <h4 class="mb-0">@Model.PedidosConcluidosCount</h4>
+                                <small class="text-success"><i class="fas fa-arrow-up"></i> @Model.PedidosConcluidosPercent%</small>
+                            </div>
+                        </div>
+                        <div class="icon-wrapper rounded-circle bg-light text-success ms-3">
+                            <i class="fas fa-clipboard-check fa-lg"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="analytic-card bg-white p-3 rounded shadow-sm d-flex align-items-center">
+                        <div class="d-flex flex-column gap-2 flex-grow-1">
+                            <p class="mb-0 text-muted">Pedidos em Preparação</p>
+                            <div class="d-flex align-items-center justify-content-between">
+                                <h4 class="mb-0">@Model.PedidosEmProcessamentoCount</h4>
+                                <small class="text-info"><i class="fas fa-sync-alt"></i> @Model.PedidosEmProcessamentoPercent%</small>
+                            </div>
+                        </div>
+                        <div class="icon-wrapper rounded-circle bg-light text-info ms-3">
+                            <i class="fas fa-hourglass-half fa-lg"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="analytic-card bg-white p-3 rounded shadow-sm d-flex align-items-center">
+                        <div class="d-flex flex-column gap-2 flex-grow-1">
+                            <p class="mb-0 text-muted">Total de Clientes</p>
+                            <div class="d-flex align-items-center justify-content-between">
+                                <h4 class="mb-0">@Model.TotalClientesCount</h4>
+                                <small class="text-primary"><i class="fas fa-users"></i> @Model.TotalClientesPercent%</small>
+                            </div>
+                        </div>
+                        <div class="icon-wrapper rounded-circle bg-light text-primary ms-3">
+                            <i class="fas fa-users fa-lg"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="popular-dishes-section mb-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h4 class="fw-bold">Pratos Populares</h4>
+                <a href="/Produtos" class="text-warning text-decoration-none">Ver mais <i class="fas fa-arrow-right ms-1"></i></a>
+            </div>
+            <div class="row g-3">
+                @foreach (var produto in Model.PopularDishes)
+                {
+                    <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12">
+                        <div class="card h-100 border-0 shadow-sm bg-white rounded-3">
+                            <img src="@(produto.ImageUrl ?? "https://via.placeholder.com/300x200?text=Sem+Imagem")"
+                                 class="card-img-top img-fluid rounded-top" alt="@produto.Name" style="height: 200px; object-fit: cover;">
+                            <div class="card-body d-flex flex-column">
+                                <h5 class="card-title fw-bold">@produto.Name</h5>
+                                <p class="card-text text-muted mb-1">@produto.Category</p>
+                                <div class="mt-auto d-flex justify-content-between align-items-center">
+                                    <span class="fw-bold fs-5 text-warning">@produto.Price.ToString("C")</span>
+
+                                    @if (SignInManager.IsSignedIn(User))
+                                    {
+                                        <div class="input-group quantity-group" style="max-width: 130px;">
+                                            <input type="number" class="form-control form-control-sm text-center quantity-input" value="1" min="1" data-productid="@produto.ProductId" style="max-width: 50px;">
+                                            <button type="button" class="btn btn-primary btn-sm add-to-order-btn" data-productid="@produto.ProductId" title="Adicionar ao pedido">
+                                                <i class="fas fa-cart-plus"></i>
+                                            </button>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <a asp-area="Identity" asp-page="/Account/Login" class="btn btn-outline-secondary btn-sm" style="white-space: nowrap;">
+                                            Login para Pedir
+                                        </a>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </section>
+
+    </div>
+
+</div>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        $(document).ready(function () {
+            // Evento para o botão "Adicionar" (para todos os produtos populares)
+            $('.add-to-order-btn').on('click', function (e) {
+                e.preventDefault();
+
+                var productId = $(this).data('productid');
+                var quantityInput = $(this).siblings('.quantity-input');
+                var quantity = parseInt(quantityInput.val());
+
+                if (isNaN(quantity) || quantity <= 0) {
+                    alert('Por favor, insira uma quantidade válida (maior que zero).');
+                    return;
+                }
+
+                // Remover o token de anti-falsificação para simplificar, ciente do risco de segurança.
+                // var antiForgeryToken = $('input[name="__RequestVerificationToken"]').val();
+
+                $.ajax({
+                    url: '@Url.Action("AdicionarProdutoAoPedido", "Pedidos")',
+                    type: 'POST',
+                    data: {
+                        productId: productId,
+                        quantity: quantity
+                        // Remover: __RequestVerificationToken: antiForgeryToken
+                    },
+                    success: function (result) {
+                        if (result.success) {
+                            alert(result.message);
+                            // Opcional: Atualizar um contador de carrinho na UI sem recarregar a página
+                            location.reload(); // Recarrega a página para atualizar o pedido em preparação
+                        } else {
+                            alert('Erro: ' + result.message);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        alert('Ocorreu um erro na requisição: ' + error + '\nDetalhes: ' + xhr.responseText);
+                    }
+                });
+            });
+        });
+    </script>
+}

@@ -1,0 +1,127 @@
+﻿@model IEnumerable<RyujinBites.Models.Lanchonete.Avaliacao>
+
+@{
+    ViewData["Title"] = "Avaliações Denunciadas"; // Título em português
+}
+
+@using Microsoft.AspNetCore.Identity // Para IdentityUser
+@using RyujinBites.Models.Identity // Onde está ApplicationUser
+@inject UserManager<ApplicationUser> UserManager // Injeta o UserManager para usar na view (para Nome do Cliente)
+
+<h1>Avaliações Denunciadas</h1>
+
+<p>Lista de avaliações que foram marcadas para revisão.</p>
+<hr />
+
+@if (!Model.Any()) // Verifica se não há avaliações denunciadas
+{
+    <div class="alert alert-info" role="alert">
+        Não há avaliações denunciadas no momento.
+    </div>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Produto</th>
+                <th>Cliente</th>
+                <th>Pontuação</th>
+                <th>Comentário</th>
+                <th>Data</th>
+                <th>Status</th>
+                <th>Ações de Moderação</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Produto.Nome)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Cliente.ApplicationUser.Nome)
+                        (@Html.DisplayFor(modelItem => item.Cliente.ApplicationUser.Email))
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Pontuacao)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Comentario)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.DataAvaliacao)
+                    </td>
+                    <td>
+                        @if (item.IsReported)
+                        {
+                            <span class="badge bg-warning">Denunciada</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-success">Normal</span>
+                        }
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-sm btn-danger removerBtn" data-id="@item.AvaliacaoId">Remover</button>
+                        <button type="button" class="btn btn-sm btn-success manterBtn" data-id="@item.AvaliacaoId">Manter</button>
+                        <a asp-action="Details" asp-route-id="@item.AvaliacaoId" class="btn btn-sm btn-info">Detalhes</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+<div>
+    <a asp-action="Index">Voltar para a Lista de Avaliações</a>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+                                     $(document).ready(function () {
+                                         // Função para enviar requisição AJAX para as ações de moderação
+                                         function sendModerationRequest(url, avaliacaoId, actionName) {
+                                             $.ajax({
+                                                 url: url,
+                                                 type: 'POST',
+                                                 data: {
+                                                     id: avaliacaoId,
+                                                     // __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val() Adiciona o token CSRF
+                                                 },
+                                                 success: function (result) {
+                                                     if (result.success) {
+                                                         alert(result.message);
+                                                         location.reload(); // Recarrega a página para atualizar a lista
+                                                     } else {
+                                                         alert('Erro: ' + result.message);
+                                                     }
+                                                 },
+                                                 error: function (xhr, status, error) {
+                                                     alert('Ocorreu um erro: ' + error + '\n' + xhr.responseText);
+                                                 }
+                                             });
+                                         }
+
+                                         // Evento para o botão "Remover"
+                                         $('.removerBtn').on('click', function () {
+                                             var avaliacaoId = $(this).data('id');
+                                             if (confirm('Tem certeza de que deseja REMOVER esta avaliação permanentemente?')) {
+                                                 sendModerationRequest('@Url.Action("RemoverAvaliacaoDenunciada", "Avaliacaos")', avaliacaoId, 'Remover');
+                                             }
+                                         });
+
+                                         // Evento para o botão "Manter"
+                                         $('.manterBtn').on('click', function () {
+                                             var avaliacaoId = $(this).data('id');
+                                             if (confirm('Tem certeza de que deseja MANTER esta avaliação (removendo o status de denunciada)?')) {
+                                                 sendModerationRequest('@Url.Action("ManterAvaliacaoDenunciada", "Avaliacaos")', avaliacaoId, 'Manter');
+                                             }
+                                         });
+                                     });
+    </script>
+}

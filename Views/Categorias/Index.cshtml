@@ -1,0 +1,86 @@
+﻿@model IEnumerable<RyujinBites.Models.ViewModels.HomeProductViewModel>
+@using Microsoft.AspNetCore.Identity
+@using RyujinBites.Models.Identity
+@inject SignInManager<ApplicationUser> SignInManager
+
+@{
+    ViewData["Title"] = "Bem-vindo ao RyujinBites!";
+}
+
+<div class="text-center mb-5">
+    <h1 class="display-4">Nosso Cardápio</h1>
+    <p class="lead">Delícias Lendárias para o seu Paladar!</p>
+</div>
+
+<div class="row row-cols-1 row-cols-md-3 g-4">
+    @foreach (var produto in Model)
+    {
+        <div class="col">
+            <div class="card h-100 shadow-sm">
+                <img src="@produto.ImagemUrl" class="card-img-top" alt="@produto.Nome">
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title">@produto.Nome</h5>
+                    <p class="card-text">@produto.Descricao</p>
+                    <div class="mt-auto d-flex justify-content-between align-items-center flex-wrap">
+                        <span class="fs-4 fw-bold text-success">@produto.Preco.ToString("C")</span>
+                        @if (SignInManager.IsSignedIn(User))
+                        {
+                            <div class="input-group w-auto mt-2 mt-md-0">
+                                <input type="number" class="form-control form-control-sm text-center quantity-input" value="1" min="1" data-productid="@produto.Id" style="max-width: 60px;">
+                                <button type="button" class="btn btn-primary btn-sm add-to-order-btn" data-productid="@produto.Id">
+                                    <i class="fas fa-cart-plus"></i> Adicionar
+                                </button>
+                            </div>
+                        }
+                        else
+                        {
+                            <a asp-area="Identity" asp-page="/Account/Login" class="btn btn-outline-secondary btn-sm mt-2 mt-md-0">Login para Pedir</a>
+                        }
+                    </div>
+                </div>
+            </div>
+            </div>
+        }
+    </div>
+
+    @section Scripts {
+        <partial name="_ValidationScriptsPartial" />
+        <script>
+            $(document).ready(function () {
+                $('.add-to-order-btn').on('click', function (e) {
+                    e.preventDefault();
+
+                    var productId = $(this).data('productid');
+                    var quantityInput = $(this).siblings('.quantity-input');
+                    var quantity = parseInt(quantityInput.val());
+
+                    if (isNaN(quantity) || quantity <= 0) {
+                        alert('Por favor, insira uma quantidade válida (maior que zero).');
+                        return;
+                    }
+
+                    // REMOVER: var antiForgeryToken = $('input[name="__RequestVerificationToken"]').val();
+
+                    $.ajax({
+                        url: '@Url.Action("AdicionarProdutoAoPedido", "Pedidos")',
+                        type: 'POST',
+                        data: {
+                            productId: productId,
+                            quantity: quantity
+                            // REMOVER: __RequestVerificationToken: antiForgeryToken
+                        },
+                        success: function (result) {
+                            if (result.success) {
+                                alert(result.message);
+                            } else {
+                                alert('Erro: ' + result.message);
+                            }
+                        },
+                        error: function (xhr, status, error) {
+                            alert('Ocorreu um erro na requisição: ' + error + '\nDetalhes: ' + xhr.responseText);
+                        }
+                    });
+                });
+            });
+        </script>
+    }

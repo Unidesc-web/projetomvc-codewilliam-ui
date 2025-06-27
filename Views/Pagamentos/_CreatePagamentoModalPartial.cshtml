@@ -1,0 +1,54 @@
+﻿@model RyujinBites.Models.Lanchonete.Pagamento
+
+@{
+    Layout = null;
+}
+
+<form id="createPagamentoForm" method="post">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <div class="form-group">
+        <label asp-for="PedidoId" class="control-label">ID do Pedido</label>
+        <select asp-for="PedidoId" class="form-control" asp-items="ViewBag.PedidoId">
+            <option value="">-- Selecione um Pedido --</option>
+        </select>
+        <span asp-validation-for="PedidoId" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="MetodoPagamento" class="control-label"></label>
+        <input asp-for="MetodoPagamento" class="form-control" />
+        <span asp-validation-for="MetodoPagamento" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="ValorPago" class="control-label"></label>
+        <input asp-for="ValorPago" class="form-control" type="number" step="0.01" />
+        <span asp-validation-for="ValorPago" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="DataPagamento" class="control-label"></label>
+        <input asp-for="DataPagamento" class="form-control" type="datetime-local" />
+        <span asp-validation-for="DataPagamento" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="StatusPagamento" class="control-label"></label>
+        <input asp-for="StatusPagamento" class="form-control" />
+        <span asp-validation-for="StatusPagamento" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="TransacaoIdExterno" class="control-label"></label>
+        <input asp-for="TransacaoIdExterno" class="form-control" />
+        <span asp-validation-for="TransacaoIdExterno" class="text-danger"></span>
+    </div>
+
+    <br />
+    <div class="form-group">
+        <input type="submit" value="Criar" class="btn btn-primary" />
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+    </div>
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

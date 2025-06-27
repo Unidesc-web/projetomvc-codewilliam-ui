@@ -1,0 +1,53 @@
+﻿@model RyujinBites.Models.Lanchonete.Pagamento
+
+@{
+    Layout = null;
+}
+
+<div>
+    <dl class="row">
+        <dt class="col-sm-3">
+            @Html.DisplayNameFor(model => model.Pedido)
+        </dt>
+        <dd class="col-sm-9">
+            @Html.DisplayFor(model => model.Pedido.PedidoId)
+            @if (Model.Pedido != null && Model.Pedido.Cliente != null && Model.Pedido.Cliente.ApplicationUser != null)
+            {
+                <span> (Cliente: @Model.Pedido.Cliente.ApplicationUser.Nome)</span>
+            }
+        </dd>
+        <dt class="col-sm-3">
+            @Html.DisplayNameFor(model => model.MetodoPagamento)
+        </dt>
+        <dd class="col-sm-9">
+            @Html.DisplayFor(model => model.MetodoPagamento)
+        </dd>
+        <dt class="col-sm-3">
+            @Html.DisplayNameFor(model => model.ValorPago)
+        </dt>
+        <dd class="col-sm-9">
+            @Html.DisplayFor(model => model.ValorPago)
+        </dd>
+        <dt class="col-sm-3">
+            @Html.DisplayNameFor(model => model.DataPagamento)
+        </dt>
+        <dd class="col-sm-9">
+            @Html.DisplayFor(model => model.DataPagamento)
+        </dd>
+        <dt class="col-sm-3">
+            @Html.DisplayNameFor(model => model.StatusPagamento)
+        </dt>
+        <dd class="col-sm-9">
+            @Html.DisplayFor(model => model.StatusPagamento)
+        </dd>
+        <dt class="col-sm-3">
+            @Html.DisplayNameFor(model => model.TransacaoIdExterno)
+        </dt>
+        <dd class="col-sm-9">
+            @Html.DisplayFor(model => model.TransacaoIdExterno)
+        </dd>
+    </dl>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+</div>

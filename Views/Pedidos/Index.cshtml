@@ -1,0 +1,151 @@
+﻿@model IEnumerable<RyujinBites.Models.Lanchonete.Pedido>
+
+@{
+    // ViewData["Title"] será definido no controlador (MeusPedidos/GerenciarPedidos)
+}
+
+@using Microsoft.AspNetCore.Identity
+@using RyujinBites.Models.Identity
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+
+<h1>@ViewData["Title"]</h1>
+
+<p>
+    <a asp-controller="Home" asp-action="Index" class="btn btn-success">Fazer Novo Pedido (Adicionar ao Carrinho)</a>
+</p>
+
+@if (User.IsInRole("Administrador"))
+{
+    <p>
+        <a asp-action="MeusPedidos" class="btn btn-info">Ver Meus Pedidos</a> |
+        <a asp-action="GerenciarPedidos" class="btn btn-info">Ver Todos os Pedidos (Admin)</a>
+    </p>
+}
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>ID do Pedido</th>
+            <th>Cliente</th>
+            <th>Data do Pedido</th>
+            <th>Status</th>
+            <th>Valor Total</th>
+            <th>Tipo de Entrega</th>
+            <th>Ações</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.PedidoId)
+                </td>
+                <td>
+                    @if (item.Cliente != null && item.Cliente.ApplicationUser != null)
+                    {
+                        @Html.DisplayFor(modelItem => item.Cliente.ApplicationUser.Nome)
+                    }
+                    else
+                    {
+                        <span>N/A</span>
+                    }
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.DataPedido)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.StatusPedido)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ValorTotal)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TipoEntrega)
+                </td>
+                <td>
+                    <a href="#" class="btn btn-sm btn-info detailsPedidoBtn" data-id="@item.PedidoId">Detalhes</a> |
+                    @if (User.IsInRole("Administrador"))
+                    {
+                <a href="#" class="btn btn-sm btn-warning editPedidoBtn" data-id="@item.PedidoId">Editar</a>}
+                    @if (item.ClienteId == UserManager.GetUserId(User) || User.IsInRole("Administrador"))
+                    {
+                        <a href="#" class="btn btn-sm btn-danger deletePedidoBtn" data-id="@item.PedidoId">Deletar</a>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<div class="modal fade" id="pedidoModal" tabindex="-1" aria-labelledby="pedidoModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="pedidoModalLabel"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    @Html.AntiForgeryToken() <script>
+                                     $(document).ready(function () {
+                                         // Função genérica para carregar e exibir modais
+                                         function loadModal(actionName, id, title, postActionName) {
+                                             var urlForGet = `@Url.Action("__ACTION__", "Pedidos", new { id = "__ID__" })`
+                                                 .replace('__ACTION__', actionName)
+                                                 .replace('__ID__', id || '');
+
+                                             $('#pedidoModalLabel').text(title);
+                                             $('#pedidoModal .modal-body').load(urlForGet, function () {
+                                                 $('#pedidoModal').modal('show');
+
+                                                 // Lida com a submissão de formulários DENTRO do modal via AJAX
+                                                 $('#pedidoModal .modal-body form').on('submit', function (e) {
+                                                     e.preventDefault();
+
+                                                     var form = $(this);
+                                                     var formData = form.serialize();
+                                                     // >>> MANTENDO O PADRÃO QUE FUNCIONOU PARA VOCÊ <<<
+                                                     var dataWithToken = formData + '&__RequestVerificationToken=';
+
+                                                     var urlForPost = `@Url.Action("__POST_ACTION__", "Pedidos", new { id = "__ID__" })`
+                                                         .replace('__POST_ACTION__', postActionName)
+                                                         .replace('__ID__', id || '');
+
+                                                     $.ajax({
+                                                         url: urlForPost,
+                                                         type: 'POST',
+                                                         data: dataWithToken,
+                                                         success: function (result) {
+                                                             if (result.success) {
+                                                                 alert(result.message);
+                                                                 $('#pedidoModal').modal('hide');
+                                                                 location.reload();
+                                                             } else {
+                                                                 alert('Erro: ' + result.message);
+                                                             }
+                                                         },
+                                                         error: function (xhr, status, error) {
+                                                             alert('Ocorreu um erro: ' + error + '\n' + xhr.responseText);
+                                                         }
+                                                     });
+                                                 });
+                                             });
+                                         }
+
+                                         // Eventos de clique para os botões/links
+                                         $('.detailsPedidoBtn').on('click', function (e) { e.preventDefault(); var id = $(this).data('id'); loadModal('Details', id, 'Detalhes do Pedido', 'Details'); });
+                                         $('.editPedidoBtn').on('click', function (e) { e.preventDefault(); var id = $(this).data('id'); loadModal('Edit', id, 'Editar Pedido', 'Edit'); });
+                                         $('.deletePedidoBtn').on('click', function (e) { e.preventDefault(); var id = $(this).data('id'); loadModal('Delete', id, 'Deletar Pedido', 'Delete'); });
+                                     });
+    </script>
+}

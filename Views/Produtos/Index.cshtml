@@ -1,0 +1,146 @@
+﻿@model IEnumerable<RyujinBites.Models.Lanchonete.Produto>
+
+@{
+    ViewData["Title"] = "Produtos"; // Título da página
+}
+
+
+
+
+
+<div class="ms-content-wrapper p-0">
+    <div class="row p-0">
+        <div class="col-12">
+            <div class="row my-4">
+                <div class="new col-md-6">
+                    <nav aria-label="breadcrumb" class="pr-3 py-2">
+                        <ol class="breadcrumb mb-0">
+                            <li class="breadcrumb-item">
+                                <a href="/" class="text-decoration-none text-dark">
+                                    <i class="material-icons align-middle">home</i> <span class="align-middle">Home</span>
+                                </a>
+                            </li>
+                            <li class="breadcrumb-item">
+                                <a href="#" class="text-decoration-none text-dark">Cardápio</a>
+                            </li>
+                            <li class="breadcrumb-item active text-primary" aria-current="page">
+                                Gerenciar Produtos  
+                            </li>
+                        </ol>
+                    </nav>
+                </div>
+                <div class="col-md-6 d-flex justify-content-end align-items-start">
+                    <a href="#" class="btn btn-success createProdutoBtn mt-2">Criar Novo Produto</a>
+                </div>
+            </div>
+        </div>
+
+        
+            <div class="row">
+                @foreach (var produto in Model)
+                {
+                    <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6">
+                        <div class="ms-card">
+                            <div class="ms-card-img">
+                                <img src="@(produto.ImagemUrl ?? "https://via.placeholder.com/300x200?text=Sem+Imagem")" alt="@produto.Nome" style="width:100%; height:auto;">
+                            </div>
+                            <div class="ms-card-body">
+                                <div class="new">
+                                    <h6 class="mb-0">@produto.Nome</h6>
+                                    <h6 class="ms-text-primary mb-0">@produto.Preco.ToString("C")</h6>
+                                </div>
+                                <div class="new meta">
+                                    <p>Estoque: @produto.Estoque </p>
+                                    @if (produto.Estoque > 0) // Verifica se tem estoque para status
+                                    {
+                                        <span class="badge badge-success">Em Estoque</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge badge-primary">Fora de Estoque</span>
+                                    }
+                                </div> 
+                                <p>@produto.Descricao</p>
+                                <div class="new mb-0">
+                                    <a href="#" class="btn btn-sm btn-danger deleteProdutoBtn" data-id="@produto.ProdutoId">Deletar</a>
+                                    <a href="#" class="btn btn-sm btn-warning editProdutoBtn" data-id="@produto.ProdutoId">Editar</a>
+                                    
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="produtoModal" tabindex="-1" aria-labelledby="produtoModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="produtoModalLabel"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    @Html.AntiForgeryToken()
+
+    <script>
+        // Seu JavaScript loadModal e eventos de clique permanecem os mesmos
+        $(document).ready(function () {
+            function loadModal(actionName, id, title, postActionName) {
+                var urlForGet = `@Url.Action("__ACTION__", "Produtos", new { id = "__ID__" })`
+                    .replace('__ACTION__', actionName)
+                    .replace('__ID__', id || '');
+
+                $('#produtoModalLabel').text(title);
+                $('#produtoModal .modal-body').load(urlForGet, function () {
+                    $('#produtoModal').modal('show');
+
+                    $('#produtoModal .modal-body form').on('submit', function (e) {
+                        e.preventDefault();
+
+                        var form = $(this);
+                        var formData = form.serialize();
+                        var dataWithToken = formData + '&__RequestVerificationToken=';
+
+                        var urlForPost = `@Url.Action("__POST_ACTION__", "Produtos", new { id = "__ID__" })`
+                            .replace('__POST_ACTION__', postActionName)
+                            .replace('__ID__', id || '');
+
+                        $.ajax({
+                            url: urlForPost,
+                            type: 'POST',
+                            data: dataWithToken,
+                            success: function (result) {
+                                if (result.success) {
+                                    alert(result.message);
+                                    $('#produtoModal').modal('hide');
+                                    location.reload();
+                                } else {
+                                    alert('Erro: ' + result.message);
+                                }
+                            },
+                            error: function (xhr, status, error) {
+                                alert('Ocorreu um erro: ' + error + '\n' + xhr.responseText);
+                            }
+                        });
+                    });
+                });
+            }
+
+            $('.createProdutoBtn').on('click', function (e) { e.preventDefault(); loadModal('Create', null, 'Criar Novo Produto', 'Create'); });
+            $('.detailsProdutoBtn').on('click', function (e) { e.preventDefault(); var id = $(this).data('id'); loadModal('Details', id, 'Detalhes do Produto', 'Details'); });
+            $('.editProdutoBtn').on('click', function (e) { e.preventDefault(); var id = $(this).data('id'); loadModal('Edit', id, 'Editar Produto', 'Edit'); });
+            $('.deleteProdutoBtn').on('click', function (e) { e.preventDefault(); var id = $(this).data('id'); loadModal('Delete', id, 'Deletar Produto', 'Delete'); });
+        });
+    </script>
+}

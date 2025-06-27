@@ -1,0 +1,17 @@
+﻿@model RyujinBites.Models.Lanchonete.Produto
+
+@{
+    Layout = null;
+}
+
+<form id="deleteProdutoForm" method="post">
+    <input type="hidden" asp-for="ProdutoId" />
+
+    <p>Tem certeza de que deseja deletar o produto: <strong>@Model.Nome</strong>?</p>
+    <p class="text-muted">Esta ação não pode ser desfeita.</p>
+
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <input type="submit" value="Deletar" class="btn btn-danger" />
+    </div>
+</form>

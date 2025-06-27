@@ -1,0 +1,55 @@
+﻿@model RyujinBites.Models.Lanchonete.Cupom
+
+@{
+    Layout = null;
+}
+
+<div>
+    <dl class="row">
+        <dt class="col-sm-3">
+            @Html.DisplayNameFor(model => model.Codigo)
+        </dt>
+        <dd class="col-sm-9">
+            @Html.DisplayFor(model => model.Codigo)
+        </dd>
+        <dt class="col-sm-3">
+            @Html.DisplayNameFor(model => model.TipoDesconto)
+        </dt>
+        <dd class="col-sm-9">
+            @Html.DisplayFor(model => model.TipoDesconto)
+        </dd>
+        <dt class="col-sm-3">
+            @Html.DisplayNameFor(model => model.ValorDesconto)
+        </dt>
+        <dd class="col-sm-9">
+            @Html.DisplayFor(model => model.ValorDesconto)
+        </dd>
+        <dt class="col-sm-3">
+            @Html.DisplayNameFor(model => model.DataInicio)
+        </dt>
+        <dd class="col-sm-9">
+            @Html.DisplayFor(model => model.DataInicio)
+        </dd>
+        <dt class="col-sm-3">
+            @Html.DisplayNameFor(model => model.DataFim)
+        </dt>
+        <dd class="col-sm-9">
+            @Html.DisplayFor(model => model.DataFim)
+        </dd>
+        <dt class="col-sm-3">
+            @Html.DisplayNameFor(model => model.Ativo)
+        </dt>
+        <dd class="col-sm-9">
+            @Html.DisplayFor(model => model.Ativo)
+        </dd>
+        <dt class="col-sm-3">
+            @Html.DisplayNameFor(model => model.UsosMaximos)
+        </dt>
+        <dd class="col-sm-9">
+            @Html.DisplayFor(model => model.UsosMaximos)
+        </dd>
+    </dl>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+</div>

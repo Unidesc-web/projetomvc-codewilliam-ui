@@ -1,0 +1,17 @@
+﻿@model RyujinBites.Models.Lanchonete.Categoria
+
+@{
+    Layout = null;
+}
+
+<form id="deleteCategoriaForm" method="post">
+    <input type="hidden" asp-for="CategoriaId" />
+
+    <p>Tem certeza de que deseja deletar a categoria: <strong>@Model.Nome</strong>?</p>
+    <p class="text-muted">Esta ação não pode ser desfeita.</p>
+
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <input type="submit" value="Deletar" class="btn btn-danger" />
+    </div>
+</form>

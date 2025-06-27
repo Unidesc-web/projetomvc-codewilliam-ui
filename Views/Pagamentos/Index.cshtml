@@ -1,0 +1,162 @@
+﻿@model IEnumerable<RyujinBites.Models.Lanchonete.Pagamento>
+
+@{
+    ViewData["Title"] = "Meus Pagamentos"; // Título padrão para clientes
+}
+
+@using Microsoft.AspNetCore.Identity
+@using RyujinBites.Models.Identity
+@inject SignInManager<ApplicationUser> SignInManager // Injeta SignInManager
+@inject UserManager<ApplicationUser> UserManager // Injeta UserManager
+
+<h1>Meus Pagamentos</h1>
+
+@if (User.IsInRole("Administrador"))
+{
+    <p>
+        <a href="#" class="btn btn-success createPagamentoBtn">Criar Novo Pagamento</a> |
+        <a asp-action="GerenciarPagamentos" class="btn btn-info">Ver Todos os Pagamentos</a>
+    </p>
+}
+else // Para clientes, apenas um título e talvez filtros se houver muitos
+{
+    <p>Aqui estão seus pagamentos.</p>
+}
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Pedido ID</th>
+            <th>Cliente</th>
+            <th>Método de Pagamento</th>
+            <th>Valor Pago</th>
+            <th>Data do Pagamento</th>
+            <th>Status do Pagamento</th>
+            <th>Transação Externa</th>
+            <th>Ações</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Pedido.PedidoId)
+                </td>
+                <td>
+                    @if (item.Pedido != null && item.Pedido.Cliente != null && item.Pedido.Cliente.ApplicationUser != null)
+                    {
+                        @Html.DisplayFor(modelItem => item.Pedido.Cliente.ApplicationUser.Nome)
+                    }
+                    else
+                    {
+                        <span>N/A</span>
+                    }
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.MetodoPagamento)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ValorPago)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.DataPagamento)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.StatusPagamento)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TransacaoIdExterno)
+                </td>
+                <td>
+                    @if (item.Pedido?.ClienteId == UserManager.GetUserId(User) || User.IsInRole("Administrador"))
+                    {
+                        <a href="#" class="btn btn-sm btn-info detailsPagamentoBtn" data-id="@item.PagamentoId">Detalhes</a>
+                    }
+                    @if (User.IsInRole("Administrador"))
+                    {
+                        <span> | </span>
+                
+                        <a href="#" class="btn btn-sm btn-warning editPagamentoBtn" data-id="@item.PagamentoId">Editar</a>
+                        <span> | </span>
+
+                        <a href="#" class="btn btn-sm btn-danger deletePagamentoBtn" data-id="@item.PagamentoId">Deletar</a>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<div class="modal fade" id="pagamentoModal" tabindex="-1" aria-labelledby="pagamentoModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="pagamentoModalLabel"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    @Html.AntiForgeryToken() <script>
+                                     $(document).ready(function () {
+                                         // Função genérica para carregar e exibir modais
+                                         function loadModal(actionName, id, title, postActionName) {
+                                             var urlForGet = `@Url.Action("__ACTION__", "Pagamentos", new { id = "__ID__" })` // Lembre-se de mudar para "Pagamentos" se renomear o controller
+                                                 .replace('__ACTION__', actionName)
+                                                 .replace('__ID__', id || '');
+
+                                             $('#pagamentoModalLabel').text(title);
+                                             $('#pagamentoModal .modal-body').load(urlForGet, function () {
+                                                 $('#pagamentoModal').modal('show');
+
+                                                 // Lida com a submissão de formulários DENTRO do modal via AJAX
+                                                 $('#pagamentoModal .modal-body form').on('submit', function (e) {
+                                                     e.preventDefault();
+
+                                                     var form = $(this);
+                                                     var formData = form.serialize();
+                                                     // >>> MANTENDO O PADRÃO QUE FUNCIONOU PARA VOCÊ <<<
+                                                     var dataWithToken = formData + '&__RequestVerificationToken=';
+
+                                                     var urlForPost = `@Url.Action("__POST_ACTION__", "Pagamentos", new { id = "__ID__" })` // Lembre-se de mudar para "Pagamentos" se renomear o controller
+                                                         .replace('__POST_ACTION__', postActionName)
+                                                         .replace('__ID__', id || '');
+
+                                                     $.ajax({
+                                                         url: urlForPost,
+                                                         type: 'POST',
+                                                         data: dataWithToken,
+                                                         success: function (result) {
+                                                             if (result.success) {
+                                                                 alert(result.message);
+                                                                 $('#pagamentoModal').modal('hide');
+                                                                 location.reload();
+                                                             } else {
+                                                                 alert('Erro: ' + result.message);
+                                                             }
+                                                         },
+                                                         error: function (xhr, status, error) {
+                                                             alert('Ocorreu um erro: ' + error + '\n' + xhr.responseText);
+                                                         }
+                                                     });
+                                                 });
+                                             });
+                                         }
+
+                                         // Eventos de clique para os botões/links
+                                         $('.createPagamentoBtn').on('click', function (e) { e.preventDefault(); loadModal('Create', null, 'Criar Novo Pagamento', 'Create'); });
+                                         $('.detailsPagamentoBtn').on('click', function (e) { e.preventDefault(); var id = $(this).data('id'); loadModal('Details', id, 'Detalhes do Pagamento', 'Details'); });
+                                         $('.editPagamentoBtn').on('click', function (e) { e.preventDefault(); var id = $(this).data('id'); loadModal('Edit', id, 'Editar Pagamento', 'Edit'); });
+                                         $('.deletePagamentoBtn').on('click', function (e) { e.preventDefault(); var id = $(this).data('id'); loadModal('Delete', id, 'Deletar Pagamento', 'Delete'); });
+                                     });
+    </script>
+}

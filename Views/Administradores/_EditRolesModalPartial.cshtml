@@ -1,0 +1,20 @@
+﻿@model RyujinBites.Models.ViewModels.UserRolesViewModel
+
+@{
+    Layout = null; // Garante que não use o _Layout.cshtml
+}
+
+<form id="editRolesForm" method="post">
+    <input type="hidden" asp-for="UserId" />
+    <input type="hidden" asp-for="UserName" />
+    <input type="hidden" asp-for="Nome" />
+    <input type="hidden" asp-for="NewRoleName" /> <p>Usuário: <strong>@Model.Nome (@Model.UserName)</strong></p>
+    <p>Papel atual: <strong>@Model.CurrentRoleName</strong></p>
+    <br />
+    <p>Ao clicar no botão abaixo, o papel do usuário será alterado para <strong>@Model.NewRoleName</strong>.</p>
+
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary">Mudar para @Model.NewRoleName</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+    </div>
+</form>

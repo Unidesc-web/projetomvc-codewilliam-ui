@@ -1,0 +1,56 @@
+﻿@model RyujinBites.Models.Lanchonete.Produto
+
+@{
+    Layout = null;
+}
+
+<div>
+    <dl class="row">
+        <dt class="col-sm-3">
+            @Html.DisplayNameFor(model => model.Nome)
+        </dt>
+        <dd class="col-sm-9">
+            @Html.DisplayFor(model => model.Nome)
+        </dd>
+        <dt class="col-sm-3">
+            @Html.DisplayNameFor(model => model.Descricao)
+        </dt>
+        <dd class="col-sm-9">
+            @Html.DisplayFor(model => model.Descricao)
+        </dd>
+        <dt class="col-sm-3">
+            @Html.DisplayNameFor(model => model.Preco)
+        </dt>
+        <dd class="col-sm-9">
+            @Html.DisplayFor(model => model.Preco)
+        </dd>
+        <dt class="col-sm-3">
+            @Html.DisplayNameFor(model => model.ImagemUrl)
+        </dt>
+        <dd class="col-sm-9">
+            @if (!string.IsNullOrEmpty(Model.ImagemUrl))
+            {
+                <img src="@Model.ImagemUrl" alt="Imagem do Produto" style="max-width: 150px; height: auto;" />
+            }
+            else
+            {
+                <span>Sem Imagem</span>
+            }
+        </dd>
+        <dt class="col-sm-3">
+            @Html.DisplayNameFor(model => model.Disponivel)
+        </dt>
+        <dd class="col-sm-9">
+            @Html.DisplayFor(model => model.Disponivel)
+        </dd>
+        <dt class="col-sm-3">
+            Categoria
+        </dt>
+        <dd class="col-sm-9">
+            @Html.DisplayFor(model => model.Categoria.Nome)
+        </dd>
+    </dl>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+</div>

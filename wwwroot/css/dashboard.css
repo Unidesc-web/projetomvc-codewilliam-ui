@@ -1,0 +1,348 @@
+﻿* {
+    padding: 0;
+    margin: 0;
+}
+
+/* --- Variáveis de Cores e Fontes --- */
+/* Adicionado um tom de cinza para o fundo da página, um preto mais suave e a cor amarela do tema */
+:root {
+    --primary-dark: #000000; /* Um preto mais suave para sidebar e seções escuras */
+    --secondary-dark: #030203; /* Um cinza bem escuro para elementos dentro do primário escuro */
+    --background-light: #f5f6fa; /* Fundo principal mais claro, levemente acinzentado */
+    --text-light: #e0e0e0;
+    --text-slate: #757575;
+    --white: #fff;
+    --text-dark: #333333;
+    --text-muted-dark: #999999;
+    --text-muted-light: #666666;
+    --accent-orange: #FF4900; /* O amarelo do tema */
+    --shadow-color: rgba(0, 0, 0, 0.1);
+    /* Fonts */
+    --Inter: 'Inter', sans-serif;
+    --Lato: 'Lato', sans-serif;
+}
+
+/* --- Estilos Globais e do Body --- */
+body {
+    font-family: var(--Lato);
+    background-color: var(--background-light); /* Aplica o fundo claro */
+    color: var(--text-dark); /* Cor do texto padrão para o conteúdo claro */
+    line-height: 1.6;
+    overflow-x: hidden; /* Evita scroll horizontal indesejado */
+}
+
+
+/* --- Layout Geral do Wrapper e Main Content --- */
+.wrapper {
+    min-height: 100vh;
+    background-color: var(--primary-dark); /* Fundo da tela toda, incluindo a sidebar */
+    display: flex; /* Garante que sidebar e main-content fiquem lado a lado */
+}
+
+.main-content {
+    margin-left: 250px; /* Espaço para a sidebar fixa, ajusta conforme a largura da sidebar */
+    background-color: var(--background-light); /* Fundo do conteúdo principal do dashboard */
+    padding: 2.5rem; /* Padding generoso */
+    flex-grow: 1; /* Ocupa o espaço restante */
+    box-shadow: -8px 0 20px var(--shadow-color); /* Sombra que projeta para o lado */
+    overflow-y: auto; /* Para rolagem se o conteúdo for grande */
+    position: relative; /* Para posicionamento de elementos filhos */
+    box-sizing: border-box;
+    transition: .3 ease-in-out;
+}
+
+#wrapper.toggled .main-content {
+    margin-left: 0;
+}
+
+/* --- Sidebar --- */
+.sidebar {
+    width: 250px;
+    height: 100vh; /* Altura total da tela */
+    position: fixed;
+    z-index: 20;
+}
+
+#wrapper.toggled .sidebar {
+    margin-left: -250px; /* Esconde a sidebar */
+}
+
+    .sidebar .logo {
+        max-width: 60px; /* Ajuste o tamanho do logo */
+    }
+
+    .sidebar .nav-link {
+        color: var(--text-slate); /* Cor do texto dos itens de menu */
+        padding: 6px 15px;
+        border-radius: 50px;
+        transition: all 0.2s ease-in-out;
+        font-weight: 400;
+    }
+
+        .sidebar .nav-link i {
+            font-size: 1.1rem;
+            margin-right: 10px;
+        }
+
+        .sidebar .nav-link:hover {
+            background-color: var(--white); /* Fundo ao passar o mouse */
+            color: var(--text-dark);
+        }
+
+        .sidebar .nav-link.active {
+            background-color: var(--white); /* Item ativo com cor de destaque */
+            color: var(--primary-dark) !important; /* Texto escuro no item ativo */
+            font-weight: 500;
+            box-shadow: 0 4px 10px rgba(255, 193, 7, 0.3); /* Sombra para o item ativo */
+        }
+
+
+/* --- Navbar Superior --- */
+.navbar-top {
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+    .navbar-top .dashboard-activity {
+        font-size: 1.6rem;
+        font-weight: 900;
+        color: var(--text-dark);
+    }
+
+    .navbar-top .search-bar .form-control {
+        border: none;
+        padding: 0.75rem 3.5rem 0.75rem 1.25rem;
+        border-radius: 25px !important; /* Arredondamento completo */
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05); /* Sombra interna sutil */
+        width: 300px; /* Largura fixa para o campo de busca */
+        position: relative;
+    }
+
+    .navbar-top .search-bar .input-group-text {
+        border: none;
+        color: var(--text-muted-light);
+        border-radius: 25px !important;
+        margin-left: -40px; /* Ajusta o ícone para dentro do campo */
+        z-index: 2;
+    }
+
+    .navbar-top .search-bar .icon-search {
+        top: 50%;
+        transform: translate(-0%, -50%);
+        position: absolute;
+        right: 4%;
+        font-size: 20px;
+        z-index: 20;
+    }
+
+    .navbar-top .date-time {
+        padding: 0.75rem 1.25rem;
+        background-color: var(--white);
+        color: var(--text-muted-light);
+        border-radius: 25px !important; /* Arredondamento completo */
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05); /* Sombra interna sutil */
+        font-size: 0.95rem;
+    }
+
+    .navbar-top .notification-icon {
+        color: var(--text-muted-light);
+        font-size: 1.3rem;
+        cursor: pointer;
+        transition: color 0.2s ease;
+    }
+
+        .navbar-top .notification-icon:hover {
+            color: var(--accent-orange);
+        }
+
+    .navbar-top .user-avatar {
+        width: 45px;
+        height: 45px;
+        object-fit: cover;
+    }
+
+
+/* --- Welcome Section --- */
+.welcome-section {
+    background-image: url("../images/home-hero-food.png");
+    background-size: cover;
+    border-radius: 20px !important;
+    padding: 2.5rem !important;
+    color: var(--text-light);
+    position: relative; /* Para posicionar a imagem de fundo, se houver */
+}
+
+    .welcome-section .welcome-text h2 {
+        font-size: 2.8rem;
+        font-weight: 800; /* Mais impacto */
+        color: var(--text-light);
+        margin-bottom: 1rem;
+    }
+
+    .welcome-section .welcome-text p {
+        color: var(--text-muted-dark);
+        max-width: 80%; /* Ajuste para o texto */
+        font-size: 1.05rem;
+        margin-bottom: 2rem;
+    }
+
+    .welcome-section .btn-learn-more {
+        background-color: var(--accent-orange);
+        color: var(--primary-dark);
+        border: none;
+        border-radius: 12px; /* Mais arredondado */
+        padding: 12px 30px;
+        font-weight: bold;
+        transition: background-color 0.3s ease;
+    }
+
+        .welcome-section .btn-learn-more:hover {
+            /*            background-color: darken(var(--accent-orange), 10%);*/
+        }
+
+    .welcome-section .welcome-image {
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        width: 350px; /* Largura da imagem de fundo */
+        height: auto;
+        transform: translateX(20%); /* Para ela sair um pouco para fora */
+        opacity: 0.8; /* Um pouco transparente */
+        z-index: 1; /* Atrás do texto */
+    }
+
+        .welcome-section .welcome-image img {
+            border-radius: 15px;
+            filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5)); /* Sombra para a imagem */
+        }
+
+    .welcome-section .welcome-text {
+        position: relative;
+        z-index: 2; /* Fica na frente da imagem */
+    }
+
+
+/* Seção de Pedido em Preparação */
+
+.prepared-order-section .container-order {
+    border-radius: 20px;
+}
+
+/* --- Estilos Responsivos (ajustes) --- */
+@media (max-width: 1199.98px) { /* Ajuste para tablets e laptops menores (col-xl) */
+    .main-content {
+        padding: 2rem;
+    }
+
+    .navbar-top .search-bar {
+        width: 35%; /* Ocupa um pouco mais de espaço */
+    }
+
+    .welcome-section .welcome-text h2 {
+        font-size: 2.2rem;
+    }
+}
+
+@media (max-width: 991.98px) { /* Para telas menores que large (lg) */
+    .wrapper {
+        flex-direction: column; /* Sidebar empilha acima do conteúdo */
+    }
+
+    .sidebar {
+        width: 100%;
+        border-radius: 0; /* Remove arredondamento na base */
+        padding: 1.5rem;
+    }
+
+    .sidebar-bottom {
+        margin-top: 1.5rem;
+    }
+
+    .main-content {
+        border-radius: 0; /* Remove arredondamento no topo do main-content */
+        padding: 1.5rem;
+    }
+
+    .navbar-top .search-bar {
+        order: 3; /* Coloca a barra de pesquisa por último no mobile */
+        width: 100%;
+        margin-top: 1rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .navbar-top .header-right {
+        order: 2; /* Coloca os ícones à direita antes da pesquisa */
+        width: auto;
+        justify-content: center;
+    }
+
+    .navbar-top .dashboard-activity {
+        order: 1; /* Coloca o título primeiro */
+        width: 100%;
+        margin-bottom: 1rem;
+    }
+
+    .welcome-section {
+        flex-direction: column;
+        text-align: center;
+        padding: 1.5rem !important;
+    }
+
+        .welcome-section .welcome-image {
+            position: static; /* Remove o posicionamento absoluto no mobile */
+            transform: none; /* Remove a transformação */
+            width: 80%; /* Ajusta o tamanho da imagem */
+            margin: 1.5rem auto 0 auto; /* Centraliza a imagem */
+            opacity: 1;
+        }
+
+        .welcome-section .welcome-text p {
+            max-width: 100%;
+        }
+
+    .analytic-card, .dish-card.card {
+        margin-bottom: 1rem;
+    }
+
+    .prepared-order-section > div {
+        padding: 1.5rem;
+    }
+}
+
+@media (max-width: 767.98px) { /* Telas muito pequenas (celular) */
+    .main-content {
+        padding: 1rem;
+    }
+
+    .navbar-top .date-time {
+        display: none; /* Esconde a data/hora para economizar espaço */
+    }
+
+    .analytic-card .icon-wrapper {
+        width: 25px; /* Ícone um pouco menor */
+        height: 25px;
+        font-size: 1.5rem;
+    }
+
+    .analytic-card h4 {
+        font-size: 1.5rem;
+    }
+
+    .dish-card .card-title {
+        font-size: 1.2rem;
+    }
+
+    .dish-card .price {
+        font-size: 1.5rem;
+    }
+
+    .prepared-order-section h3 {
+        font-size: 1.5rem;
+    }
+
+    .payment-summary .total span {
+        font-size: 1.5rem;
+    }
+}

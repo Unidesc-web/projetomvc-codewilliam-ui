@@ -1,0 +1,18 @@
+﻿@model RyujinBites.Models.Lanchonete.Pagamento
+
+@{
+    Layout = null;
+}
+
+<form id="deletePagamentoForm" method="post">
+    <input type="hidden" asp-for="PagamentoId" />
+
+    <p>Tem certeza de que deseja deletar o pagamento do pedido <strong>@Model.Pedido?.PedidoId</strong>?</p>
+    <p class="text-muted">Método: @Model.MetodoPagamento, Valor: @Model.ValorPago.ToString("C")</p>
+    <p class="text-muted">Esta ação não pode ser desfeita.</p>
+
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <input type="submit" value="Deletar" class="btn btn-danger" />
+    </div>
+</form>

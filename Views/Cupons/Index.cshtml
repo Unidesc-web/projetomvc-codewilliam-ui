@@ -1,0 +1,157 @@
+﻿@model IEnumerable<RyujinBites.Models.Lanchonete.Cupom>
+
+@{
+    ViewData["Title"] = "Cupons";
+}
+
+<h1>Cupons</h1>
+
+<p>
+    <a href="#" class="btn btn-success createCupomBtn">Criar Novo Cupom</a>
+</p>
+
+<!-- INÍCIO DO NOVO LAYOUT DE TABELA COM DATATABLES -->
+<div class="ms-content-wrapper">
+    <div class="row">
+        <div class="col-md-12">
+            <!-- Breadcrumb (opcional) -->
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb pl-0">
+                    <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i> Home</a></li>
+                    <li class="breadcrumb-item"><a href="#">Marketing</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Gerenciar Cupons</li>
+                </ol>
+            </nav>
+            <div class="ms-panel">
+                <div class="ms-panel-header">
+                    <h6>Lista de Cupons</h6>
+                </div>
+                <div class="ms-panel-body">
+                    <div class="table-responsive">
+                        <!-- A ID DA TABELA PRECISA SER ÚNICA PARA O DATATABLES -->
+                        <table id="tabela-cupons" class="table w-100 thead-primary dataTable no-footer" role="grid">
+                            <thead>
+                                <tr role="row">
+                                    <th>Código</th>
+                                    <th>Tipo de Desconto</th>
+                                    <th>Valor</th>
+                                    <th>Início</th>
+                                    <th>Fim</th>
+                                    <th>Ativo</th>
+                                    <th>Usos Máximos</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model)
+                                {
+                                    <tr role="row">
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Codigo)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.TipoDesconto)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.ValorDesconto)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.DataInicio)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.DataFim)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Ativo)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.UsosMaximos)
+                                        </td>
+                                        <td>
+                                            <a href="#" class="btn btn-sm btn-warning editCupomBtn" data-id="@item.CupomId">Editar</a> |
+                                            <a href="#" class="btn btn-sm btn-danger deleteCupomBtn" data-id="@item.CupomId">Deletar</a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- FIM DO NOVO LAYOUT DE TABELA -->
+<!-- HTML DO MODAL GENÉRICO (Mantido igual) -->
+<div class="modal fade" id="cupomModal" tabindex="-1" aria-labelledby="cupomModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="cupomModalLabel"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Conteúdo da partial view será carregado aqui -->
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    @Html.AntiForgeryToken()
+
+    <script>
+        $(document).ready(function () {
+            // Função genérica para carregar e exibir modais
+            function loadModal(actionName, id, title, postActionName) {
+                var urlForGet = `@Url.Action("__ACTION__", "Cupons", new { id = "__ID__" })`
+                    .replace('__ACTION__', actionName)
+                    .replace('__ID__', id || '');
+
+                $('#cupomModalLabel').text(title);
+                $('#cupomModal .modal-body').load(urlForGet, function () {
+                    $('#cupomModal').modal('show');
+
+                    $('#cupomModal .modal-body form').on('submit', function (e) {
+                        e.preventDefault();
+
+                        var form = $(this);
+                        var formData = form.serialize();
+                        var dataWithToken = formData + '&__RequestVerificationToken=';
+
+                        var urlForPost = `@Url.Action("__POST_ACTION__", "Cupons", new { id = "__ID__" })`
+                            .replace('__POST_ACTION__', postActionName)
+                            .replace('__ID__', id || '');
+
+                        $.ajax({
+                            url: urlForPost,
+                            type: 'POST',
+                            data: dataWithToken,
+                            success: function (result) {
+                                if (result.success) {
+                                    alert(result.message);
+                                    $('#cupomModal').modal('hide');
+                                    location.reload();
+                                } else {
+                                    alert('Erro: ' + result.message);
+                                }
+                            },
+                            error: function (xhr, status, error) {
+                                alert('Ocorreu um erro: ' + error + '\n' + xhr.responseText);
+                            }
+                        });
+                    });
+                });
+            }
+
+            // Eventos de clique para os botões/links
+            $('.createCupomBtn').on('click', function (e) { e.preventDefault(); loadModal('Create', null, 'Criar Novo Cupom', 'Create'); });
+            $('.detailsCupomBtn').on('click', function (e) { e.preventDefault(); var id = $(this).data('id'); loadModal('Details', id, 'Detalhes do Cupom', 'Details'); });
+            $('.editCupomBtn').on('click', function (e) { e.preventDefault(); var id = $(this).data('id'); loadModal('Edit', id, 'Editar Cupom', 'Edit'); });
+            $('.deleteCupomBtn').on('click', function (e) { e.preventDefault(); var id = $(this).data('id'); loadModal('Delete', id, 'Deletar Cupom', 'Delete'); });
+        });
+    </script>
+}

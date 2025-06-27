@@ -1,0 +1,157 @@
+﻿<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - RyujinBites</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/RyujinBites.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/dashboard.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha512-Fo3rlalDLsjhfrAaWE1Wj3Tz3p8e/3Fw3kY9B+XW1+B6G+GqN/p7K4z1P7kLgR5C3n2B9/b5M5+tA9K8xQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+<body>
+    <div class="d-flex" id="wrapper">
+        <div class="bg-black text-white sidebar d-flex flex-column justify-content-between border-right" id="sidebar-wrapper">
+            <div class="sidebar-heading text-center py-4 primary-text fs-4 fw-bold text-uppercase border-bottom">
+                <a href="/Home">RyujinBites</a>
+            </div>
+            <div class="list-group list-group-flush my-3">
+                @using Microsoft.AspNetCore.Identity
+                @using RyujinBites.Models.Identity
+                @inject SignInManager<ApplicationUser> SignInManager
+                @inject UserManager<ApplicationUser> UserManager
+
+
+                @if (User.Identity.IsAuthenticated) // Se o usuário estiver logado
+                {
+                <a href="/Avaliacoes" class="list-group-item list-group-item-action bg-transparent second-text @(ViewData["ActivePage"]?.ToString() == "Avaliacoes" ? "active" : "")">
+                    <i class="fas fa-star me-2"></i>Avaliações
+                </a>
+                    <a href="#collapseMeusDados" data-bs-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action bg-transparent second-text">
+                        <i class="fas fa-user me-2"></i>Meus Dados
+                    </a>
+                    <div class="collapse @((ViewData["ActivePage"]?.ToString() == "MeusPedidos" || ViewData["ActivePage"]?.ToString() == "MeusPagamentos") ? "show" : "")" id="collapseMeusDados">
+                        <a href="/Pedidos/MeusPedidos" class="list-group-item list-group-item-action bg-transparent second-text ps-5 @(ViewData["ActivePage"]?.ToString() == "MeusPedidos" ? "active" : "")">
+                            <i class="fas fa-receipt me-2"></i>Meus Pedidos
+                        </a>
+                        <a href="/Pagamentos/MeusPagamentos" class="list-group-item list-group-item-action bg-transparent second-text ps-5 @(ViewData["ActivePage"]?.ToString() == "MeusPagamentos" ? "active" : "")">
+                            <i class="fas fa-money-check-alt me-2"></i>Meus Pagamentos
+                        </a>
+                    </div>
+
+                    @if (User.IsInRole("Administrador"))
+                    {
+                        <a href="#collapseCadastros" data-bs-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action bg-transparent second-text">
+                            <i class="fas fa-pencil-alt me-2"></i>Cadastros
+                        </a>
+                        <div class="collapse @((ViewData["ActivePage"]?.ToString() == "Categorias" || ViewData["ActivePage"]?.ToString() == "Produtos" || ViewData["ActivePage"]?.ToString() == "Cupons") ? "show" : "")" id="collapseCadastros">
+                            <a href="/Categorias" class="list-group-item list-group-item-action bg-transparent second-text ps-5 @(ViewData["ActivePage"]?.ToString() == "Categorias" ? "active" : "")">
+                                <i class="fas fa-list me-2"></i>Categorias
+                            </a>
+                            <a href="/Produtos" class="list-group-item list-group-item-action bg-transparent second-text ps-5 @(ViewData["ActivePage"]?.ToString() == "Produtos" ? "active" : "")">
+                                <i class="fas fa-burger me-2"></i>Produtos
+                            </a>
+                            <a href="/Cupons" class="list-group-item list-group-item-action bg-transparent second-text ps-5 @(ViewData["ActivePage"]?.ToString() == "Cupons" ? "active" : "")">
+                                <i class="fas fa-tags me-2"></i>Cupons
+                            </a>
+                        </div>
+
+                        <a href="#collapsePedidosAdmin" data-bs-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action bg-transparent second-text">
+                            <i class="fas fa-clipboard-list me-2"></i>Pedidos e Pagamentos
+                        </a>
+                        <div class="collapse @((ViewData["ActivePage"]?.ToString() == "GerenciarPedidos" || ViewData["ActivePage"]?.ToString() == "GerenciarPagamentos") ? "show" : "")" id="collapsePedidosAdmin">
+                            <a href="/Pedidos/GerenciarPedidos" class="list-group-item list-group-item-action bg-transparent second-text ps-5 @(ViewData["ActivePage"]?.ToString() == "GerenciarPedidos" ? "active" : "")">
+                                <i class="fas fa-tasks me-2"></i>Gerenciar Pedidos
+                            </a>
+                            <a href="/Pagamentos/GerenciarPagamentos" class="list-group-item list-group-item-action bg-transparent second-text ps-5 @(ViewData["ActivePage"]?.ToString() == "GerenciarPagamentos" ? "active" : "")">
+                                <i class="fas fa-money-check-alt me-2"></i>Gerenciar Pagamentos
+                            </a>
+                        </div>
+
+                        <a href="#collapseUsuariosAdmin" data-bs-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action bg-transparent second-text">
+                            <i class="fas fa-users-cog me-2"></i>Usuários e Moderação
+                        </a>
+                        <div class="collapse @((ViewData["ActivePage"]?.ToString() == "AvaliacoesDenunciadas" || ViewData["ActivePage"]?.ToString() == "Administradores" || ViewData["ActivePage"]?.ToString() == "Clientes") ? "show" : "")" id="collapseUsuariosAdmin">
+                            <a href="/Avaliacoes/Denuncias" class="list-group-item list-group-item-action bg-transparent second-text ps-5 @(ViewData["ActivePage"]?.ToString() == "AvaliacoesDenunciadas" ? "active" : "")">
+                                <i class="fas fa-flag me-2"></i>Avaliações Denunciadas
+                            </a>
+                            <a href="/Administradores" class="list-group-item list-group-item-action bg-transparent second-text ps-5 @(ViewData["ActivePage"]?.ToString() == "Administradores" ? "active" : "")">
+                                <i class="fas fa-user-shield me-2"></i>Gerenciar Usuários
+                            </a>
+                            <a href="/Clientes" class="list-group-item list-group-item-action bg-transparent second-text ps-5 @(ViewData["ActivePage"]?.ToString() == "Clientes" ? "active" : "")">
+                                <i class="fas fa-users me-2"></i>Clientes Detalhes
+                            </a>
+                        </div>
+                    }
+                    <a href="/Identity/Account/Logout" class="list-group-item list-group-item-action bg-transparent text-danger fw-bold">
+                        <i class="fas fa-power-off me-2"></i>Sair
+                    </a>
+                }
+                else // Se não estiver logado, oferece login/registro
+                {
+                    <a href="/Identity/Account/Login" class="list-group-item list-group-item-action bg-transparent primary-text fw-bold">
+                        <i class="fas fa-sign-in-alt me-2"></i>Login
+                    </a>
+                    <a href="/Identity/Account/Register" class="list-group-item list-group-item-action bg-transparent primary-text fw-bold nav-link active">
+                        <i class="fas fa-user-plus me-2"></i>Registrar
+                    </a>
+                }
+            </div>
+        <div class="w-100 d-flex justify-content-center">
+                <img src="~/images/chef-3d-character.png" alt="Chef Avatar" style="max-width: 250px;" />
+            </div>
+        </div>
+        <div class="main-content flex-grow-1 p-3"> 
+            <header class="navbar-top p-0 d-flex justify-content-between align-items-center">
+                <div class="d-flex justify-content-between align-items-center">
+                   <i class="material-icons align-middle" id="menu-toggle" style="cursor: pointer;">menu</i>
+                </div>
+
+                <div class="input-group search-bar w-50">
+                    <input type="text" class="form-control rounded-pill" placeholder="Search" aria-label="Search">
+                </div>
+                                        <partial name="_LoginPartial" />
+                
+            </header>
+
+            <main role="main" class="pb-3">
+                @RenderBody()
+            </main>
+        </div>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/moment.js"></script>
+    <script src="~/js/jquery-ui.min.js"></script>
+    <script src="~/js/Chart.bundle.min.js"></script>
+    <script src="~/js/Chart.Financial.js"></script>
+    <script src="~/js/slick.min.js"></script>
+    <script src="~/js/perfect-scrollbar.js"></script>
+    <script src="~/js/jquery.webticker.min.js"></script>
+    <script src="~/js/settings.js"></script>
+    <script src="~/js/datatables.min.js"></script>
+    <script src="~/js/data-tables.js"></script>
+    <script src="~/js/framework.js"></script>
+    <script src="~/js/popper.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)   
+
+    <script>
+        // Este script agora lida com a classe 'toggled' para mostrar/esconder a sidebar
+        document.addEventListener('DOMContentLoaded', function() {
+            var el = document.getElementById("wrapper");
+            var toggleButton = document.getElementById("menu-toggle");
+
+            if (toggleButton) { // Garante que o botão existe
+                toggleButton.onclick = function () {
+                    el.classList.toggle("toggled");
+                };
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/iconify-icon@3.0.0/dist/iconify-icon.min.js"></script>
+</body>
+</html>
